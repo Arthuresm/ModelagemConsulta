@@ -39,6 +39,12 @@ public class VectorRankingModel implements RankingModel
 	 * Apos ter o peso para cada documento, rode o UtilQuery.getOrderedList para retornar a lista de documentos
 	 * ordenados pela consulta
 	 */
+        
+        /*
+        * DICA DO PROF : quando wiq tiver mais de uma ocorrencia, é necessario acumular o valor que repete. 
+        * Dessa forma apenas depois de percorrer todo wij é que faremos a atualizacao do dj
+        *
+        */
 	@Override
 	public List<Integer> getOrderedDocs(Map<String, Ocorrencia> mapQueryOcur,
 			Map<String, List<Ocorrencia>> lstOcorrPorTermoDocs) {
