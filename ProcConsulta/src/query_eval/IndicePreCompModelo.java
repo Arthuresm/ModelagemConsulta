@@ -37,19 +37,27 @@ public class IndicePreCompModelo{
 	/**
 	 * Acumula o (tfxidf)^2 de mais uma ocorrencia (oc) no somatorio para calcular a norma por documento 
 	 * Usar a propria norma para acumular o somatorio
-	 * @param lstOcc
+	 * @param numDocsTerm
 	 * @param oc
 	 */
 	public void updateSumSquaredForNorm(int numDocsTerm, Ocorrencia oc) {
-		
+            Double tf = VectorRankingModel.tf(oc.getFreq());
+            Double idf = VectorRankingModel.idf(numDocumentos, numDocsTerm);
+            Double aux = Math.pow(tf*idf, 2);
+            
+            normaPorDocumento.put(oc.getDocId(), aux);
 	}
 	/**
 	 * Atualiza o tamPorDocumento com mais uma cocorrencia 
 	 * @param oc
 	 */
 	public void updateDocTam(Ocorrencia oc) {
-
-		
+            Integer id = oc.getDocId();
+            Integer freq = oc.getFreq();
+            Integer tamAtual = tamPorDocumento.get(id);
+            
+            tamPorDocumento.remove(id);
+            tamPorDocumento.put(id, tamAtual+freq);
 	}
 	/**
 	 * Inicializa os atributos por meio do indice (idx):

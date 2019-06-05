@@ -14,17 +14,14 @@ public class VectorRankingModel implements RankingModel
 	private IndicePreCompModelo idxPrecompVals;
 	
 	
-	public static double tf(int freqTerm)
-	{
-		
+	public static double tf(int freqTerm){
+            return freqTerm > 0 ? 1 + (Math.log((double)freqTerm)/Math.log(2)) : 0;
 	}
-	public static double idf(int numDocs,int numDocsTerm)
-	{
-
+	public static double idf(int numDocs,int numDocsTerm){
+            return (numDocs/numDocsTerm) > 0 ? Math.log(numDocs/numDocsTerm)/Math.log(2) : 0;
 	}
-	public static double tfIdf(int numDocs,int freqTerm,int numDocsTerm)
-	{
-
+	public static double tfIdf(int numDocs,int freqTerm,int numDocsTerm){
+            return freqTerm > 0 ? tf(freqTerm)*idf(numDocs, numDocsTerm) : 0;
 	}
 	public VectorRankingModel(IndicePreCompModelo idxPrecomp)
 	{
