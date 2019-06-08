@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import indice.estrutura.Ocorrencia;
+import java.util.Iterator;
+import java.util.Set;
 
 
 public class VectorRankingModel implements RankingModel 
@@ -40,15 +42,33 @@ public class VectorRankingModel implements RankingModel
         /*
         * DICA DO PROF : quando wiq tiver mais de uma ocorrencia, é necessario acumular o valor que repete. 
         * Dessa forma apenas depois de percorrer todo wij é que faremos a atualizacao do dj
-        *
+        * 
+           
         */
 	@Override
 	public List<Integer> getOrderedDocs(Map<String, Ocorrencia> mapQueryOcur,
 			Map<String, List<Ocorrencia>> lstOcorrPorTermoDocs) {
-		
-		Map<Integer,Double> dj_weight = new HashMap<Integer,Double>();
-		
-		return null;
+	        
+            Set <String> termosConsult = mapQueryOcur.keySet();
+            Iterator <String> it = termosConsult.iterator();
+            String chave = null;
+            Map<Integer,Double> dj_weight = new HashMap<Integer,Double>();
+            List <Ocorrencia> occur = null;
+            
+            double tf, idf, aux;
+            
+            while(it.hasNext()){
+                chave = it.next();
+                tf = tf(mapQueryOcur.get(chave).getFreq());
+                idf = idf(); //Como saber o numero de documentos total??
+                occur = lstOcorrPorTermoDocs.get(chave);
+                
+                for(int i=0; i<occur.size(); i++){
+                    
+                }
+            }
+                
+            return null;
 	}
 	
 	

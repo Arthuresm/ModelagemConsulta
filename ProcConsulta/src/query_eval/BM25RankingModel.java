@@ -8,8 +8,6 @@ import indice.estrutura.Ocorrencia;
 
 public class BM25RankingModel implements RankingModel 
 {
-	private 
-
 	private IndicePreCompModelo idxPrecompVals;
 	private double b;
 	private int k1;
