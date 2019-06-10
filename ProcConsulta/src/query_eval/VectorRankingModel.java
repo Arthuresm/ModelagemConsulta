@@ -55,20 +55,37 @@ public class VectorRankingModel implements RankingModel
             Map<Integer,Double> dj_weight = new HashMap<Integer,Double>();
             List <Ocorrencia> occur = null;
             
-            double tf, idf, aux;
+            double tf, idf, wiq, wij, tf_ij, acumula_wij_wiq, sim_dj_q;
             
             while(it.hasNext()){
                 chave = it.next();
                 tf = tf(mapQueryOcur.get(chave).getFreq());
-                idf = idf(); //Como saber o numero de documentos total??
+                idf = idf(idxPrecompVals.getNumDocumentos(), lstOcorrPorTermoDocs.get(chave).size()); 
+                wiq = tf * idf;
+                
                 occur = lstOcorrPorTermoDocs.get(chave);
                 
                 for(int i=0; i<occur.size(); i++){
-                    
+                    tf_ij = tf(occur.get(i).getFreq());
+                    wij = tf_ij * idf; 
+                    //acumula_wij_wiq = wij*wiq; 
+                    if(dj_weight.containsKey(occur.get(i).getDocId())){
+                        dj_weight.put(occur.get(i).getDocId(), wij*wiq);
+                    } else { 
+                        acumula_wij_wiq = wij*wiq + dj_weight.get(occur.get(i).getDocId());
+                        dj_weight.put(occur.get(i).getDocId(),acumula_wij_wiq);
+                    }
+                        
+                }
+                for(Integer docId : dj_weight.keySet()){
+                    sim_dj_q = dj_weight.get(docId);
+                    sim_dj_q = (sim_dj_q)/(idxPrecompVals.getNormaDocumento(docId)); 
+                    dj_weight.put(docId, sim_dj_q); 
                 }
             }
-                
-            return null;
+            
+            return UtilQuery.getOrderedList(dj_weight); 
+            //retornar lista de ids de docs ordenados por peso calculado nessa função anteriormente
 	}
 	
 	
