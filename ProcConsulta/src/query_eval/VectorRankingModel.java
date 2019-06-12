@@ -25,8 +25,7 @@ public class VectorRankingModel implements RankingModel
 	public static double tfIdf(int numDocs,int freqTerm,int numDocsTerm){
             return freqTerm > 0 ? tf(freqTerm)*idf(numDocs, numDocsTerm) : 0;
 	}
-	public VectorRankingModel(IndicePreCompModelo idxPrecomp)
-	{
+	public VectorRankingModel(IndicePreCompModelo idxPrecomp){
 		this.idxPrecompVals = idxPrecomp;
 	}
 
@@ -69,7 +68,7 @@ public class VectorRankingModel implements RankingModel
                     tf_ij = tf(occur.get(i).getFreq());
                     wij = tf_ij * idf; 
                     //acumula_wij_wiq = wij*wiq; 
-                    if(dj_weight.containsKey(occur.get(i).getDocId())){
+                    if(!dj_weight.containsKey(occur.get(i).getDocId())){
                         dj_weight.put(occur.get(i).getDocId(), wij*wiq);
                     } else { 
                         acumula_wij_wiq = wij*wiq + dj_weight.get(occur.get(i).getDocId());

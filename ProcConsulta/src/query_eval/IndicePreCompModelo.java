@@ -18,22 +18,16 @@ public class IndicePreCompModelo{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
 	private int numDocumentos = 0;
 	private double avgLenPerDocument = 0;
 	private Map<Integer,Integer> tamPorDocumento = new HashMap<Integer,Integer>();
 	private Map<Integer,Double> normaPorDocumento = new HashMap<Integer,Double>();
-	
-	
-	
 	private Indice idx;
 	
-	public IndicePreCompModelo(Indice idx)
-	{
+	public IndicePreCompModelo(Indice idx) {
 		this.idx = idx;
 		
 		precomputeValues(idx);
-		
 		
 	}
 	/**
@@ -43,7 +37,6 @@ public class IndicePreCompModelo{
 	 * @param oc
 	 */
 	public void updateSumSquaredForNorm(int numDocsTerm, Ocorrencia oc) {
-            
             Double tf = VectorRankingModel.tf(oc.getFreq());
             Double idf = VectorRankingModel.idf(numDocumentos, numDocsTerm);
             Double aux;
@@ -107,8 +100,7 @@ public class IndicePreCompModelo{
 	}
 
 
-	public int getDocumentLength(int docId)
-	{
+	public int getDocumentLength(int docId) {
 		return this.tamPorDocumento.get(docId);
 	}
 	public int getNumDocumentos() {
