@@ -69,6 +69,10 @@ public abstract class Indice implements Serializable {
 	public void gravarIndice(File arq){
 		
 	}
+        
+        public abstract boolean hasDocId(int idDoc);
+      
+        
 	
 	/**
 	 * Le o indice em um determinado arquivo

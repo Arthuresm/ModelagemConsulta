@@ -363,5 +363,14 @@ public class IndiceLight extends Indice
 		return this.arrFreqTermo;
 	}
 
+        public boolean hasDocId(int idDoc){
+            for(int i=0; i < arrDocId.length; i++){
+                if(arrDocId[i] == idDoc){
+                    return true;
+                }
+            }
+            return false;
+        }
+      
 
 }
