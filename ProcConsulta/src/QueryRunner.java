@@ -21,8 +21,8 @@ public class  QueryRunner {
 	public enum OPERACAO{
 		AND,OR;
 	}
-	private RankingModel queryRankingModel;
-	private Indice idx;
+	private static RankingModel queryRankingModel;
+	private static Indice idx;
 	
 	public QueryRunner(Indice idx,RankingModel m)
 	{
@@ -90,7 +90,7 @@ public class  QueryRunner {
  	* Considere que lstResposta já é a lista de respostas ordenadas por um método de processamento de consulta (BM25, Modelo vetorial).
 	* Os documentos relevantes estão no parametro docRelevantes
 	*/
-	public int countTopNRelevants(int n, List<Integer> lstRespostas, Set<Integer> docRelevantes){
+	public static int countTopNRelevants(int n, List<Integer> lstRespostas, Set<Integer> docRelevantes){
             int count = 0;            
             for(int i=0; i < n; i++){
                 for(Integer doc : docRelevantes){
@@ -108,7 +108,7 @@ public class  QueryRunner {
 	DICA: tente reaproveitar metodos do indexador para isso. Além disso, se você considerar a consulta como um documento, é possivel fazer
 	algo parecido com o que foi feito no metodo index do Indexador.
 	*/
-	public Map<String,Ocorrencia> getOcorrenciaTermoConsulta(String consulta){
+	public static Map<String,Ocorrencia> getOcorrenciaTermoConsulta(String consulta){
             Map<String,Ocorrencia> termosNaConsulta = new HashMap<String, Ocorrencia>() {};
             Set<String> termos = idx.getListTermos();
             String[] consultaSplitted;
@@ -140,7 +140,7 @@ public class  QueryRunner {
 	/**
 	Retorna um mapa para cada termo existente em setTermo, sua lista ocorrencia no indice (atributo idx do QueryRunner).
 	*/
-	public Map<String,List<Ocorrencia>> getOcorrenciaTermoColecao(Set<String> setTermo){
+	public static Map<String,List<Ocorrencia>> getOcorrenciaTermoColecao(Set<String> setTermo){
             
             Map<String, List<Ocorrencia>> OcorrenciaTermoColecao = new HashMap<String, List<Ocorrencia>>();
             for(String termo : setTermo){
@@ -156,27 +156,23 @@ public class  QueryRunner {
 	*/
 	public static List<Integer> getDocsTermo(String consulta)
 	{
-
-		
-		
-		//Obtenha, para cada termo da consulta, sua ocorrencia por meio do método getOcorrenciaTermoConsulta
-		Map<String,Ocorrencia> mapOcorrencia = null;
-
-		//obtenha a lista de ocorrencia dos termos na colecao por meio do método  getOcorrenciaTermoColecao
-		Map<String,List<Ocorrencia>> lstOcorrPorTermoDocs = null;
-	 	
-
-		//utilize o queryRankingModel para retornar o documentos ordenados de acordo com a ocorrencia de termos na consulta e na colecao
-		return null;
+            //Obtenha, para cada termo da consulta, sua ocorrencia por meio do método getOcorrenciaTermoConsulta
+            Map<String,Ocorrencia> mapOcorrencia = getOcorrenciaTermoConsulta(consulta);
+                  
+            //obtenha a lista de ocorrencia dos termos na colecao por meio do método  getOcorrenciaTermoColecao
+            Map<String,List<Ocorrencia>> lstOcorrPorTermoDocs = getOcorrenciaTermoColecao(mapOcorrencia.keySet());
+           
+            //utilize o queryRankingModel para retornar o documentos ordenados de acordo com a ocorrencia de termos na consulta e na colecao
+            return queryRankingModel.getOrderedDocs(mapOcorrencia, lstOcorrPorTermoDocs);
 	}
 
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException, Exception
 	{
-		
-		
+
 		//leia o indice (base da dados fornecida)
   		Indice idx = null;
+                
 
  		//Checagem se existe um documento (apenas para teste, deveria existir)
 		System.out.println("Existe o doc? "+idx.hasDocId(105047));
@@ -195,8 +191,7 @@ public class  QueryRunner {
 
 		System.out.println("Fazendo query...");
 		String query = "São Paulo";//aquui, peça para o usuário uma query (voce pode deixar isso num while ou fazer um interface grafica se estiver bastante animado ;)	
-		runQuery(query,idx, idxPreCom,mapRelevances);
-		
+		runQuery(query,idx, idxPreCom,mapRelevances);	
 		
 	}
 	
