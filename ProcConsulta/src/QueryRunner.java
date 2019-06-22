@@ -91,7 +91,15 @@ public class  QueryRunner {
 	* Os documentos relevantes estão no parametro docRelevantes
 	*/
 	public int countTopNRelevants(int n, List<Integer> lstRespostas, Set<Integer> docRelevantes){
-            
+            int count = 0;            
+            for(int i=0; i < n; i++){
+                for(Integer doc : docRelevantes){
+                    if(doc.equals(lstRespostas.get(i))){
+                        count++;
+                    }
+                }
+            }            
+            return count;
 	}
 	/**
 	Preprocesse a consulta da mesma forma que foi preprocessado o texto do documento.
@@ -101,6 +109,34 @@ public class  QueryRunner {
 	algo parecido com o que foi feito no metodo index do Indexador.
 	*/
 	public Map<String,Ocorrencia> getOcorrenciaTermoConsulta(String consulta){
+         
+            Map<String,Ocorrencia> termosNaConsulta = new HashMap<String, Ocorrencia>() {};
+            Set<String> termos = idx.getListTermos();
+            String[] consultaSplitted;
+            //quebra string consulta nos espaços
+            consultaSplitted = consulta.split(" ");
+            Ocorrencia occur;
+            int freq;
+            
+            //percorre cada termo do índice e verifica se ele se encontra na consulta
+            for(String termo : termos){
+                for(String word : consultaSplitted){
+                    if(word.equalsIgnoreCase(termo)){
+                        //se já existe o termo no map, apenas incrementa a frequência
+                        if(termosNaConsulta.containsKey(termo)){
+                            freq = termosNaConsulta.get(termo).getFreq() + 1;
+                            termosNaConsulta.get(termo).setFreq(freq);
+                        }
+                        //se termo não existe no map, acrescenta com docId = -1 e frequencia = 1
+                        else{
+                            //cria novo objeto ocorrencia com docId = -1 e frequencia = 1.
+                            occur = new Ocorrencia(-1, 1);
+                            termosNaConsulta.put(termo, occur);
+                        }
+                    }
+                }
+            }              
+            return termosNaConsulta;
 	}
 	/**
 	Retorna um mapa para cada termo existente em setTermo, sua lista ocorrencia no indice (atributo idx do QueryRunner).
@@ -131,7 +167,7 @@ public class  QueryRunner {
 	}
 
 	
-	public static void main(String[] args) throws IOException, ClassNotFoundException
+	public static void main(String[] args) throws IOException, ClassNotFoundException, Exception
 	{
 		
 		
