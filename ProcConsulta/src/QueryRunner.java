@@ -37,7 +37,7 @@ public class  QueryRunner {
 	* "Sao paulo"=>[1,3,5,6,233],
         *  "Belo Horizonte"=>[2,4,5,3]
 	**/
-	public HashMap<String,Set<Integer>> getRelevancePerQuery() throws Exception {
+	public static HashMap<String,Set<Integer>> getRelevancePerQuery() throws Exception {
             
             File file1 = new File("Belo_Horizonte.dat");
             File file2 = new File("Irlanda.dat");
@@ -101,13 +101,19 @@ public class  QueryRunner {
 	algo parecido com o que foi feito no metodo index do Indexador.
 	*/
 	public Map<String,Ocorrencia> getOcorrenciaTermoConsulta(String consulta){
+
 	}
 	/**
 	Retorna um mapa para cada termo existente em setTermo, sua lista ocorrencia no indice (atributo idx do QueryRunner).
 	*/
 	public Map<String,List<Ocorrencia>> getOcorrenciaTermoColecao(Set<String> setTermo){
-
-
+            
+            Map<String, List<Ocorrencia>> OcorrenciaTermoColecao = new HashMap<String, List<Ocorrencia>>();
+            for(String termo : setTermo){
+                OcorrenciaTermoColecao.put(termo, idx.getListOccur(termo));
+            }
+            
+            return OcorrenciaTermoColecao;
 	}
 
 	/**
@@ -131,7 +137,7 @@ public class  QueryRunner {
 	}
 
 	
-	public static void main(String[] args) throws IOException, ClassNotFoundException
+	public static void main(String[] args) throws IOException, ClassNotFoundException, Exception
 	{
 		
 		
@@ -141,7 +147,7 @@ public class  QueryRunner {
  		//Checagem se existe um documento (apenas para teste, deveria existir)
 		System.out.println("Existe o doc? "+idx.hasDocId(105047));
 		
-		//Instancie o IndicePreCompModelo para pr ecomputar os valores necessarios para a query
+		//Instancie o IndicePreCompModelo para precomputar os valores necessarios para a query
 		System.out.println("Precomputando valores atraves do indice...");
 		long time = System.currentTimeMillis();
 
