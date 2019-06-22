@@ -12,8 +12,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
+import org.w3c.dom.css.Counter;
+import query_eval.BM25RankingModel;
+import query_eval.BooleanRankingModel;
+import query_eval.BooleanRankingModel.OPERATOR;
 import query_eval.RankingModel;
+import query_eval.VectorRankingModel;
 
 
 public class  QueryRunner {
@@ -90,7 +96,7 @@ public class  QueryRunner {
  	* Considere que lstResposta já é a lista de respostas ordenadas por um método de processamento de consulta (BM25, Modelo vetorial).
 	* Os documentos relevantes estão no parametro docRelevantes
 	*/
-	public int countTopNRelevants(int n, List<Integer> lstRespostas, Set<Integer> docRelevantes){
+	public static int countTopNRelevants(int n, List<Integer> lstRespostas, Set<Integer> docRelevantes){
             int count = 0;            
             for(int i=0; i < n; i++){
                 for(Integer doc : docRelevantes){
@@ -183,6 +189,7 @@ public class  QueryRunner {
 		
 		//Instancie o IndicePreCompModelo para precomputar os valores necessarios para a query
 		System.out.println("Precomputando valores atraves do indice...");
+                IndicePreCompModelo idxPreCom = new IndicePreCompModelo(idx);
 		long time = System.currentTimeMillis();
 
 
@@ -194,9 +201,12 @@ public class  QueryRunner {
 		HashMap<String,Set<Integer>> mapRelevances = getRelevancePerQuery();
 
 		System.out.println("Fazendo query...");
-		String query = "São Paulo";//aquui, peça para o usuário uma query (voce pode deixar isso num while ou fazer um interface grafica se estiver bastante animado ;)	
-		runQuery(query,idx, idxPreCom,mapRelevances);
-		
+                System.out.println("Digite uma query: ");
+		//String query = "São Paulo";//aquui, peça para o usuário uma query (voce pode deixar isso num while ou fazer um interface grafica se estiver bastante animado ;)	
+		String query;
+                Scanner in = new Scanner(System.in);
+                query = in.nextLine();
+                runQuery(query,idx, idxPreCom,mapRelevances);
 		
 	}
 	
@@ -207,25 +217,82 @@ public class  QueryRunner {
 		//PEça para usuario selecionar entre BM25, Booleano ou modelo vetorial para intanciar o QueryRunner 
 		//apropriadamente. NO caso do booleano, vc deve pedir ao usuario se será um "and" ou "or" entre os termos. 
 		//abaixo, existem exemplos fixos.
-		//QueryRunner qr = new QueryRunner(idx,new BooleanRankingModel(OPERATOR.AND));
-		//QueryRunner qr = new QueryRunner(idx,new VectorRankingModel(idxPreCom));
-		QueryRunner qr = new QueryRunner(idx,new BM25RankingModel(idxPreCom, 0.75, 1));
-		
+                int opcao;
+                int opcaobool;
+                boolean selecao = false;
+                boolean selecaobool = false;
+                Scanner scanner;
+                
+                while(!selecao){
+                    System.out.println("Digite a opção desejada:");
+                    System.out.println("1 - BM25");
+                    System.out.println("2 - Booleano");
+                    System.out.println("3 - Modelo Vetorial");
+
+                    scanner = new Scanner(System.in);
+                    opcao = scanner.nextInt();
+                    if(opcao != 1 && opcao != 2 && opcao != 3){
+                        System.out.println("Opção inválida.");
+                    }
+                    if(opcao == 1){
+                        selecao = true;
+                        QueryRunner qr = new QueryRunner(idx,new BM25RankingModel(idxPreCom, 0.75, 1));
+                    }
+                    if(opcao == 2){
+                        while(!selecaobool){
+                            System.out.println("Digite a operação desejada:");
+                            System.out.println("1 - AND");
+                            System.out.println("2 - OR");
+                            System.out.println("3 - voltar");
+                            scanner = new Scanner(System.in);
+                            opcaobool = scanner.nextInt();
+                            
+                            if(opcaobool != 1 && opcaobool != 2 && opcaobool != 3){
+                                System.out.println("Opção inválida."); 
+                            }
+                            if(opcaobool == 1){
+                                selecaobool = true;
+                                selecao = true;
+                                QueryRunner qr = new QueryRunner(idx,new BooleanRankingModel(OPERATOR.AND));
+                            }
+                            if(opcaobool == 2){
+                                selecaobool = true;
+                                selecao = true;
+                                QueryRunner qr = new QueryRunner(idx,new BooleanRankingModel(OPERATOR.OR));
+                            }
+                            if(opcaobool == 3){
+                                selecaobool = true;
+                            }
+                        }                        
+                    }
+                    else{
+                        selecao = true;
+                        QueryRunner qr = new QueryRunner(idx,new VectorRankingModel(idxPreCom));
+                    }                    
+                }                	
 		System.out.println("Total: "+(System.currentTimeMillis()-time)/1000.0+" segs");
 		
-		List<Integer> lstResposta = /**utilize o metodo getDocsTerm para pegar a lista de termos da resposta**/;
+		//List<Integer> lstResposta = /**utilize o metodo getDocsTerm para pegar a lista de termos da resposta**/;
+                List<Integer> lstResposta = getDocsTermo(query);
 		System.out.println("Tamanho: "+lstResposta.size());
 		
 		//nesse if, vc irá verificar se a consulta possui documentos relevantes
 		//se possuir, vc deverá calcular a Precisao e revocação nos top 5, 10, 20, 50. O for que fiz abaixo é só uma sugestao e o metododo countTopNRelevants podera auxiliar no calculo da revocacao e precisao 
-		if(true)
-		{
+		
+                Set<Integer> docsRelevantes = new HashSet<Integer>();
+                        
+                for(Set<Integer> set : mapRelevantes.values()){
+                    docsRelevantes.addAll(set);
+                }
+                if(true){
 			int[] arrPrec = {5,10,20,50};
 			double revocacao = 0;
 			double precisao = 0;
+                        
+                        
 			for(int n : arrPrec)
 			{
-				revocacao = 0;//substitua aqui pelo calculo da revocacao topN
+				revocacao = countTopNRelevants(n, lstResposta, docsRelevantes);//substitua aqui pelo calculo da revocacao topN
 				precisao = 0;//substitua aqui pelo calculo da revocacao topN
 				System.out.println("PRecisao @"+n+": "+precisao);
 				System.out.println("Recall @"+n+": "+revocacao);
@@ -233,8 +300,20 @@ public class  QueryRunner {
 		}
 
 		//imprima aas top 10 respostas
+                System.out.println("Top 10 respostas: ");
+                printTopNRelevants(10, lstResposta, docsRelevantes);
 
 	}
-	
+        
+        public static void printTopNRelevants(int n, List<Integer> lstRespostas, Set<Integer> docRelevantes){
+                       
+            for(int i=0; i < n; i++){
+                for(Integer doc : docRelevantes){
+                    if(doc.equals(lstRespostas.get(i))){
+                        System.out.println(doc);
+                    }
+                }
+            }            
+	}
 	
 }
