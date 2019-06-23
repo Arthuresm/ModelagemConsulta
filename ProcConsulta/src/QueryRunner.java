@@ -1,5 +1,6 @@
 
 import indice.estrutura.Indice;
+import indice.estrutura.IndiceLight;
 import query_eval.IndicePreCompModelo;
 import indice.estrutura.Ocorrencia;
 import java.io.BufferedReader;
@@ -20,6 +21,11 @@ import query_eval.BooleanRankingModel;
 import query_eval.BooleanRankingModel.OPERATOR;
 import query_eval.RankingModel;
 import query_eval.VectorRankingModel;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document; 
+import org.jsoup.nodes.Element; 
+import org.jsoup.select.Elements;
 
 
 public class  QueryRunner {
@@ -175,9 +181,33 @@ public class  QueryRunner {
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException, Exception
 	{
-
-		//leia o indice (base da dados fornecida)
-  		Indice idx = null;
+                HashMap<String,Integer> TermsFreq = new HashMap<String,Integer>(); 
+                HashMap<String,Set<Integer>> database = getRelevancePerQuery();
+                String pag = "HTML5";
+                String [] aux1, termos;
+                Integer freq;
+                
+                //leia o indice (da base de dados fornecida)
+  		Indice idx = new IndiceLight(10);
+                
+                        aux1 = Jsoup.parse(pag).text().split("\n");
+                        
+                        for(String aux2 : aux1){
+                            termos = aux2.split(" ");
+                            
+                            for(String termo : termos){
+                                if(TermsFreq.containsKey(termo)){
+                                    freq = TermsFreq.remove(termo);
+                                    freq++;
+                                    idx.index(termo, doc, freq);
+                                    TermsFreq.put(termo, freq);
+                                }else{
+                                    idx.index(termo, doc, 1);
+                                    TermsFreq.put(termo, 1);
+                                }
+                            }
+                        }
+                 
                 
 
  		//Checagem se existe um documento (apenas para teste, deveria existir)
