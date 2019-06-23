@@ -179,37 +179,53 @@ public class  QueryRunner {
 	}
 
 	
-	public static void main(String[] args) throws IOException, ClassNotFoundException, Exception
-	{
+	public static void main(String[] args) throws IOException, ClassNotFoundException, Exception{
                 HashMap<String,Integer> TermsFreq = new HashMap<String,Integer>(); 
                 HashMap<String,Set<Integer>> database = getRelevancePerQuery();
                 String pag = "HTML5";
                 String [] aux1, termos;
                 Integer freq;
                 
+                //pasta principal
+                File file = new File("./wikiSample");
+                
+                //lista de pastas dentro da pasta principal
+                File subs[] = file.listFiles();
+                int docId = 0;
+                
                 //leia o indice (da base de dados fornecida)
   		Indice idx = new IndiceLight(10);
                 
-                        aux1 = Jsoup.parse(pag).text().split("\n");
+                
+                //percorre lista de pastas da pasta principal
+                for(int j=0; j< subs.length;j++){
+                    //para cada pasta, cria uma lista de arquivos que a pasta contém
+                    File arqs[] = subs[j].listFiles();
+
+                    //percorre cada arquivo da subpasta
+                    for(int i=0;i<arqs.length;i++){
                         
+                        File arq = arqs[i];
+                        docId = Integer.parseInt(arq.getName());    //docId será nome do arquivo
+                        aux1 = Jsoup.parse(pag).text().split("\n");
+
                         for(String aux2 : aux1){
                             termos = aux2.split(" ");
-                            
+
                             for(String termo : termos){
                                 if(TermsFreq.containsKey(termo)){
                                     freq = TermsFreq.remove(termo);
                                     freq++;
-                                    idx.index(termo, doc, freq);
+                                    idx.index(termo, docId, freq);
                                     TermsFreq.put(termo, freq);
                                 }else{
-                                    idx.index(termo, doc, 1);
+                                    idx.index(termo, docId, 1);
                                     TermsFreq.put(termo, 1);
                                 }
                             }
                         }
-                 
-                
-
+                    }    
+                }        
  		//Checagem se existe um documento (apenas para teste, deveria existir)
 		System.out.println("Existe o doc? "+idx.hasDocId(105047));
 		
@@ -340,28 +356,5 @@ public class  QueryRunner {
                     }
                 }
             }            
-	}
-        public static String html2text(String html){
-            return Jsoup.parse(html).text();
-        }
-        
-        public static void indexaWiki(String html){
-            String text = html2text(html);
-            String[] frases = text.split("\n");
-            String[] termos = null;
-            HashMap<String, Set<Ocorrencia>> index = new HashMap<String, Set<Ocorrencia>>();
-
-            
-            for(String frase : frases){
-                String[] termosFrase = frase.split(" ");
-                termos = termos.concat(termosFrase);
-            }
-            
-            for(String termo : termos){
-                if(index.containsKey(termo)){
-                    
-                }
-            }
-        }
-	
+        }	
 }
