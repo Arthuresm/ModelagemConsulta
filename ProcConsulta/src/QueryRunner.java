@@ -207,22 +207,29 @@ public class  QueryRunner {
                         
                         File arq = arqs[i];
                         docId = Integer.parseInt(arq.getName());    //docId será nome do arquivo
-                        aux1 = Jsoup.parse(pag).text().split("\n");
+                        
+                        BufferedReader br = new BufferedReader(new FileReader(arq));
+             
+                        String st;
+                        while ((st = br.readLine()) != null){
+                            
+                            //aux1 = Jsoup.parse(st).text().split("\n");
 
-                        for(String aux2 : aux1){
-                            termos = aux2.split(" ");
+                            //for(String aux2 : aux1){
+                                termos = Jsoup.parse(st).text().split(" ");
 
-                            for(String termo : termos){
-                                if(TermsFreq.containsKey(termo)){
-                                    freq = TermsFreq.remove(termo);
-                                    freq++;
-                                    idx.index(termo, docId, freq);
-                                    TermsFreq.put(termo, freq);
-                                }else{
-                                    idx.index(termo, docId, 1);
-                                    TermsFreq.put(termo, 1);
+                                for(String termo : termos){
+                                    if(TermsFreq.containsKey(termo)){
+                                        freq = TermsFreq.remove(termo);
+                                        freq++;
+                                        idx.index(termo, docId, freq);
+                                        TermsFreq.put(termo, freq);
+                                    }else{
+                                        idx.index(termo, docId, 1);
+                                        TermsFreq.put(termo, 1);
+                                    }
                                 }
-                            }
+                            //}
                         }
                     }    
                 }        
