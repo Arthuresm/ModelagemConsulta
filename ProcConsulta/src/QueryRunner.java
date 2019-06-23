@@ -311,5 +311,27 @@ public class  QueryRunner {
                 }
             }            
 	}
+        public static String html2text(String html){
+            return Jsoup.parse(html).text();
+        }
+        
+        public static void indexaWiki(String html){
+            String text = html2text(html);
+            String[] frases = text.split("\n");
+            String[] termos = null;
+            HashMap<String, Set<Ocorrencia>> index = new HashMap<String, Set<Ocorrencia>>();
+
+            
+            for(String frase : frases){
+                String[] termosFrase = frase.split(" ");
+                termos = termos.concat(termosFrase);
+            }
+            
+            for(String termo : termos){
+                if(index.containsKey(termo)){
+                    
+                }
+            }
+        }
 	
 }
