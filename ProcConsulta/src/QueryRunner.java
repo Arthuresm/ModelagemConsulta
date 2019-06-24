@@ -155,10 +155,11 @@ public class  QueryRunner {
 	/**
 	Retorna um mapa para cada termo existente em setTermo, sua lista ocorrencia no indice (atributo idx do QueryRunner).
 	*/
-	public static Map<String,List<Ocorrencia>> getOcorrenciaTermoColecao(Set<String> setTermo){
+	public static Map<String,List<Ocorrencia>> getOcorrenciaTermoColecao(Set<String> setTermo, Indice idx){
             
             Map<String, List<Ocorrencia>> OcorrenciaTermoColecao = new HashMap<String, List<Ocorrencia>>();
             for(String termo : setTermo){
+                idx.getListOccur(termo);
                 OcorrenciaTermoColecao.put(termo, idx.getListOccur(termo));
             }
             
@@ -169,13 +170,13 @@ public class  QueryRunner {
 	* A partir do indice (atributo idx), retorna a lista de ids de documentos desta consulta 
 	* usando o modelo especificado pelo atributo queryRankingModel
 	*/
-	public static List<Integer> getDocsTermo(String consulta)
+	public static List<Integer> getDocsTermo(String consulta, Indice idx)
 	{
             //Obtenha, para cada termo da consulta, sua ocorrencia por meio do método getOcorrenciaTermoConsulta
             Map<String,Ocorrencia> mapOcorrencia = getOcorrenciaTermoConsulta(consulta);
                
             //obtenha a lista de ocorrencia dos termos na colecao por meio do método  getOcorrenciaTermoColecao
-            Map<String,List<Ocorrencia>> lstOcorrPorTermoDocs = getOcorrenciaTermoColecao(mapOcorrencia.keySet());
+            Map<String,List<Ocorrencia>> lstOcorrPorTermoDocs = getOcorrenciaTermoColecao(mapOcorrencia.keySet(), idx);
            
             //utilize o queryRankingModel para retornar o documentos ordenados de acordo com a ocorrencia de termos na consulta e na colecao
             return queryRankingModel.getOrderedDocs(mapOcorrencia, lstOcorrPorTermoDocs);
@@ -185,19 +186,18 @@ public class  QueryRunner {
 	public static void main(String[] args) throws IOException, ClassNotFoundException, Exception{
                 HashMap<String,Integer> TermsFreq = new HashMap<String,Integer>(); 
                 HashMap<String,Set<Integer>> database = getRelevancePerQuery();
-                String pag = "HTML5";
                 String [] aux1, termos;
                 Integer freq;
                 
                 //pasta principal
-                File file = new File("C:\\Users\\NataliaNatsumy\\Documents\\ModelagemConsulta\\ProcConsulta\\src\\wikiSample");
+                File file = new File("C:\\Users\\Aluno\\Documents\\ModelagemConsulta-master\\ProcConsulta\\src\\wikiSample");
                 
                 //lista de pastas dentro da pasta principal
                 File subs[] = file.listFiles();
                 int docId = 0;
                 
                 //leia o indice (da base de dados fornecida)
-  		Indice idx = new IndiceLight(10);
+  		Indice idx = new IndiceLight(1000);
                 
                 
                 //percorre lista de pastas da pasta principal
@@ -218,10 +218,7 @@ public class  QueryRunner {
                         String st;
                         while ((st = br.readLine()) != null){
                             
-                            //aux1 = Jsoup.parse(st).text().split("\n");
-
-                            //for(String aux2 : aux1){
-                                termos = Jsoup.parse(st).text().split(" ");
+                                termos = Jsoup.parse(st).text().toLowerCase().split(" ");
 
                                 for(String termo : termos){
                                     if(TermsFreq.containsKey(termo)){
@@ -237,7 +234,9 @@ public class  QueryRunner {
                             //}
                         }
                     }    
-                }        
+                }      
+                
+                idx.concluiIndexacao();
  		//Checagem se existe um documento (apenas para teste, deveria existir)
 		System.out.println("Existe o doc? "+idx.hasDocId(105047));
 		
@@ -324,7 +323,7 @@ public class  QueryRunner {
 		System.out.println("Total: "+(System.currentTimeMillis()-time)/1000.0+" segs");
 		
 		//List<Integer> lstResposta = /**utilize o metodo getDocsTerm para pegar a lista de termos da resposta**/;
-                List<Integer> lstResposta = getDocsTermo(query);
+                List<Integer> lstResposta = getDocsTermo(query, idx);
 		System.out.println("Tamanho: "+lstResposta.size());
 		
 		//nesse if, vc irá verificar se a consulta possui documentos relevantes
@@ -341,13 +340,13 @@ public class  QueryRunner {
 			double precisao = 0;
                         
                         
-			for(int n : arrPrec)
-			{
-				revocacao = countTopNRelevants(n, lstResposta, docsRelevantes);//substitua aqui pelo calculo da revocacao topN
-				precisao = 0;//substitua aqui pelo calculo da revocacao topN
-				System.out.println("PRecisao @"+n+": "+precisao);
-				System.out.println("Recall @"+n+": "+revocacao);
-			}
+//			for(int n : arrPrec)
+//			{
+//				revocacao = countTopNRelevants(n, lstResposta, docsRelevantes);//substitua aqui pelo calculo da revocacao topN
+//				precisao = 0;//substitua aqui pelo calculo da revocacao topN
+//				System.out.println("PRecisao @"+n+": "+precisao);
+//				System.out.println("Recall @"+n+": "+revocacao);
+//			}
 		}
 
 		//imprima aas top 10 respostas
@@ -355,6 +354,11 @@ public class  QueryRunner {
                 printTopNRelevants(10, lstResposta, docsRelevantes);
 
 	}
+        
+        public static String removeSpecialCharacters(String text){
+            String newText = text.replaceAll("[^a-zA-Z]+", "");
+            return newText;
+        }
         
         public static void printTopNRelevants(int n, List<Integer> lstRespostas, Set<Integer> docRelevantes){
                        
