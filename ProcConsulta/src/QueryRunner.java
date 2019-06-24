@@ -3,6 +3,7 @@ import indice.estrutura.Indice;
 import indice.estrutura.IndiceLight;
 import query_eval.IndicePreCompModelo;
 import indice.estrutura.Ocorrencia;
+
 import java.io.BufferedReader;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Pattern;
 import org.w3c.dom.css.Counter;
 import query_eval.BM25RankingModel;
 import query_eval.BooleanRankingModel;
@@ -186,11 +188,13 @@ public class  QueryRunner {
                 String [] aux1, termos;
                 Integer freq;
                 
+                System.out.println("here");
                 //pasta principal
-                File file = new File("./wikiSample");
+                File file = new File("C:/Users/NataliaNatsumy/Documents/ModelagemConsulta/ProcConsulta/src/wikiSample");
                 
                 //lista de pastas dentro da pasta principal
                 File subs[] = file.listFiles();
+                System.out.println(subs.length);
                 int docId = 0;
                 
                 //leia o indice (da base de dados fornecida)
@@ -206,7 +210,9 @@ public class  QueryRunner {
                     for(int i=0;i<arqs.length;i++){
                         
                         File arq = arqs[i];
-                        docId = Integer.parseInt(arq.getName());    //docId será nome do arquivo
+                        String[] name = arq.getName().split(Pattern.quote("."));
+                        
+                        docId = Integer.parseInt(name[0]);    //docId será nome do arquivo
                         
                         BufferedReader br = new BufferedReader(new FileReader(arq));
              
@@ -240,10 +246,7 @@ public class  QueryRunner {
 		System.out.println("Precomputando valores atraves do indice...");
                 IndicePreCompModelo idxPreCom = new IndicePreCompModelo(idx);
 		long time = System.currentTimeMillis();
-
-
-
-		
+                
 		System.out.println("Total (precompta o valor da : "+(System.currentTimeMillis()-time)/1000.0+" segs");
 		
 		//encontra os docs relevantes
