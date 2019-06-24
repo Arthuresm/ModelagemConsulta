@@ -58,9 +58,15 @@ public class IndicePreCompModelo{
 	public void updateDocTam(Ocorrencia oc) {
             Integer id = oc.getDocId();
             Integer freq = oc.getFreq();
-            Integer tamAtual = tamPorDocumento.get(id);
+            Integer tamAtual;
             
-            tamPorDocumento.remove(id);
+            if(tamPorDocumento.get(id) == null){
+                tamAtual = 0;
+            }else{
+                tamAtual = tamPorDocumento.get(id);
+                tamPorDocumento.remove(id);
+            }           
+            
             tamPorDocumento.put(id, tamAtual+freq);
 	}
 	/**
@@ -74,6 +80,7 @@ public class IndicePreCompModelo{
 	private void precomputeValues(Indice idx) {
             //Numero de documentos do indice
             numDocumentos = idx.getNumDocumentos();
+            System.out.println(numDocumentos);
             
             if(numDocumentos != 0)
                 //Media de palavras dos documentos
