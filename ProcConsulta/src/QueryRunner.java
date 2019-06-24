@@ -125,6 +125,7 @@ public class  QueryRunner {
 	public static Map<String,Ocorrencia> getOcorrenciaTermoConsulta(String consulta){
             Map<String,Ocorrencia> termosNaConsulta = new HashMap<String, Ocorrencia>() {};
             Set<String> termos = idx.getListTermos();
+            
             String[] consultaSplitted;
             //quebra string consulta nos espaços
             consultaSplitted = consulta.split(" ");
@@ -148,7 +149,7 @@ public class  QueryRunner {
                         }
                     }
                 }
-            }              
+            }         
             return termosNaConsulta;
 	}
 	/**
@@ -172,7 +173,7 @@ public class  QueryRunner {
 	{
             //Obtenha, para cada termo da consulta, sua ocorrencia por meio do método getOcorrenciaTermoConsulta
             Map<String,Ocorrencia> mapOcorrencia = getOcorrenciaTermoConsulta(consulta);
-                  
+               
             //obtenha a lista de ocorrencia dos termos na colecao por meio do método  getOcorrenciaTermoColecao
             Map<String,List<Ocorrencia>> lstOcorrPorTermoDocs = getOcorrenciaTermoColecao(mapOcorrencia.keySet());
            
@@ -188,13 +189,11 @@ public class  QueryRunner {
                 String [] aux1, termos;
                 Integer freq;
                 
-                System.out.println("here");
                 //pasta principal
                 File file = new File("C:/Users/NataliaNatsumy/Documents/ModelagemConsulta/ProcConsulta/src/wikiSample");
                 
                 //lista de pastas dentro da pasta principal
                 File subs[] = file.listFiles();
-                System.out.println(subs.length);
                 int docId = 0;
                 
                 //leia o indice (da base de dados fornecida)
@@ -317,7 +316,7 @@ public class  QueryRunner {
                             }
                         }                        
                     }
-                    else{
+                    if(opcao == 3){
                         selecao = true;
                         QueryRunner qr = new QueryRunner(idx,new VectorRankingModel(idxPreCom));
                     }                    
