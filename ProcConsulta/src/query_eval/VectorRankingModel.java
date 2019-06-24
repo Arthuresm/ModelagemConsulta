@@ -20,7 +20,10 @@ public class VectorRankingModel implements RankingModel
             return freqTerm > 0 ? 1 + (Math.log((double)freqTerm)/Math.log(2)) : 0;
 	}
 	public static double idf(int numDocs,int numDocsTerm){
-            return (numDocs/numDocsTerm) > 0 ? Math.log(numDocs/numDocsTerm)/Math.log(2) : 0;
+            if(numDocsTerm != 0)
+                return (numDocs/numDocsTerm) > 0 ? Math.log(numDocs/numDocsTerm)/Math.log(2) : 0;
+            else
+                return 0;
 	}
 	public static double tfIdf(int numDocs,int freqTerm,int numDocsTerm){
             return freqTerm > 0 ? tf(freqTerm)*idf(numDocs, numDocsTerm) : 0;
