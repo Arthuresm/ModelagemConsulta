@@ -190,7 +190,7 @@ public class  QueryRunner {
                 
                 System.out.println("here");
                 //pasta principal
-                File file = new File("C:/Users/NataliaNatsumy/Documents/ModelagemConsulta/ProcConsulta/src/wikiSample");
+                File file = new File("C:\\Users\\Bruno\\Desktop\\ModelagemConsulta\\ProcConsulta\\src\\wikiSample");
                 
                 //lista de pastas dentro da pasta principal
                 File subs[] = file.listFiles();
