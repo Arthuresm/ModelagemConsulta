@@ -144,7 +144,7 @@ public class  QueryRunner {
                         //se termo não existe no map, acrescenta com docId = -1 e frequencia = 1
                         else{
                             //cria novo objeto ocorrencia com docId = -1 e frequencia = 1.
-                            occur = new Ocorrencia(-1, 1);
+                            occur = new Ocorrencia(-1, 1);                            
                             termosNaConsulta.put(termo, occur);
                         }
                     }
@@ -190,7 +190,7 @@ public class  QueryRunner {
                 Integer freq;
                 
                 //pasta principal
-                File file = new File("C:\\Users\\Bruno\\Desktop\\ModelagemConsulta\\ProcConsulta\\src\\wikiSample");
+                File file = new File("C:\\Users\\NataliaNatsumy\\Documents\\ModelagemConsulta\\ProcConsulta\\src\\wikiSample");
                 
                 //lista de pastas dentro da pasta principal
                 File subs[] = file.listFiles();
