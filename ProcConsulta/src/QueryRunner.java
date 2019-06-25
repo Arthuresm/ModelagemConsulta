@@ -7,6 +7,7 @@ import indice.estrutura.Ocorrencia;
 import java.io.BufferedReader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.w3c.dom.css.Counter;
 import query_eval.BM25RankingModel;
@@ -37,9 +40,9 @@ public class  QueryRunner {
 	}
 	private static RankingModel queryRankingModel;
 	private static Indice idx;
-	
-	public QueryRunner(Indice idx,RankingModel m)
-	{
+        
+        
+	public QueryRunner(Indice idx,RankingModel m){
 		this.queryRankingModel = m;
 		this.idx = idx;
 	}
@@ -95,7 +98,7 @@ public class  QueryRunner {
             }
             
             docCidadesRelevantes.put("Sao Paulo",Docs);
-            Docs.clear();
+            //Docs.clear();
             
             return docCidadesRelevantes;
 	}
@@ -191,7 +194,6 @@ public class  QueryRunner {
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException, Exception{
                 HashMap<String,Integer> TermsFreq = new HashMap<String,Integer>(); 
-                HashMap<String,Set<Integer>> database = getRelevancePerQuery();
                 String [] aux1, termos;
                 Integer freq;
                 
@@ -200,9 +202,8 @@ public class  QueryRunner {
                 
                 //lista de pastas dentro da pasta principal
                 File subs[] = file.listFiles();
-                int docId = 0;
-                
-                //leia o indice (da base de dados fornecida)
+                int docId = 0;                
+                //leia o indice (da base de dados forstaticnecida)
   		Indice idx = new IndiceLight(1000);
                 
                 
@@ -267,7 +268,7 @@ public class  QueryRunner {
 		
 	}
 	
-	public static void runQuery(String query,Indice idx, IndicePreCompModelo idxPreCom ,HashMap<String,Set<Integer>> mapRelevantes) {
+	public static void runQuery(String query,Indice idx, IndicePreCompModelo idxPreCom ,HashMap<String,Set<Integer>> mapRelevantes) throws IOException {
 		long time;
 		time = System.currentTimeMillis();
 		
@@ -332,17 +333,24 @@ public class  QueryRunner {
 		//List<Integer> lstResposta = /**utilize o metodo getDocsTerm para pegar a lista de termos da resposta**/;
                 List<Integer> lstResposta = idx.retornaDocsPerTerm(query);
                 
+                for(Integer l : lstResposta){
+                    carregaListaTitulos(l);
+                }
                 
 		System.out.println("Tamanho: "+lstResposta.size());
 		
 		//nesse if, vc irá verificar se a consulta possui documentos relevantes
 		//se possuir, vc deverá calcular a Precisao e revocação nos top 5, 10, 20, 50. O for que fiz abaixo é só uma sugestao e o metododo countTopNRelevants podera auxiliar no calculo da revocacao e precisao 
 		
-                Set<Integer> docsRelevantes = new HashSet<Integer>();
+                //Set<Integer> docsRelevantes = new HashSet<Integer>();
+                Set<Integer> docsRelevantes = mapRelevantes.get("Irlanda");
                         
-                for(Set<Integer> set : mapRelevantes.values()){
-                    docsRelevantes.addAll(set);
-                }
+                /*for(Set<Integer> set : mapRelevantes.values()){
+                    for(Integer i : set){
+                        docsRelevantes.add(i);
+                    }
+                }*/
+                
                 if(true){
 			int[] arrPrec = {5,10,20,50};
 			double revocacao = 0;
@@ -360,7 +368,7 @@ public class  QueryRunner {
 
 		//imprima aas top 10 respostas
                 System.out.println("Top 10 respostas: ");
-                printTopNRelevants(10, lstResposta, docsRelevantes);
+                printTopNRelevants(lstResposta.size(), lstResposta, docsRelevantes);
 
 	}
         
@@ -370,13 +378,26 @@ public class  QueryRunner {
         }
         
         public static void printTopNRelevants(int n, List<Integer> lstRespostas, Set<Integer> docRelevantes){
-                       
+                        
             for(int i=0; i < n; i++){
-                for(Integer doc : docRelevantes){
-                    if(doc.equals(lstRespostas.get(i))){
-                        System.out.println(doc);
-                    }
+                if(docRelevantes.contains(lstRespostas.get(i))){
+                    System.out.println(lstRespostas.get(i));
                 }
             }            
-        }	
+        }
+        
+                
+        public static void carregaListaTitulos(int docId) throws FileNotFoundException, IOException{
+            File file = new File("titlePerDoc.dat");
+            
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String[] Docs_str;  
+            while(br.readLine() != null){
+                Docs_str = br.readLine().split(";");
+                if(docId == Integer.parseInt(Docs_str[0])){
+                    System.out.println(Docs_str[1]);
+                }               
+            }          
+        }
+        
 }
