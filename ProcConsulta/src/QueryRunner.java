@@ -126,6 +126,11 @@ public class  QueryRunner {
             Map<String,Ocorrencia> termosNaConsulta = new HashMap<String, Ocorrencia>() {};
             Set<String> termos = idx.getListTermos();
             
+            for(int i = 0; i< idx.getListOccur(consulta).size(); i++){
+                System.out.println("ndoc: " + idx.getListOccur(consulta).get(i).getDocId());
+            }
+            
+            
             String[] consultaSplitted;
             //quebra string consulta nos espaços
             consultaSplitted = consulta.split(" ");
@@ -136,6 +141,7 @@ public class  QueryRunner {
             for(String termo : termos){
                 for(String word : consultaSplitted){
                     if(word.equalsIgnoreCase(termo)){
+                        
                         //se já existe o termo no map, apenas incrementa a frequência
                         if(termosNaConsulta.containsKey(termo)){
                             freq = termosNaConsulta.get(termo).getFreq() + 1;
@@ -190,7 +196,7 @@ public class  QueryRunner {
                 Integer freq;
                 
                 //pasta principal
-                File file = new File("C:\\Users\\Aluno\\Documents\\ModelagemConsulta-master\\ProcConsulta\\src\\wikiSample");
+                File file = new File("/home/nathaliapadua/Documents/repositorios/ModelagemConsulta/ProcConsulta/src/wikiSample");
                 
                 //lista de pastas dentro da pasta principal
                 File subs[] = file.listFiles();
@@ -216,19 +222,21 @@ public class  QueryRunner {
                         BufferedReader br = new BufferedReader(new FileReader(arq));
              
                         String st;
+                        String formatted;
                         while ((st = br.readLine()) != null){
                             
                                 termos = Jsoup.parse(st).text().toLowerCase().split(" ");
 
                                 for(String termo : termos){
-                                    if(TermsFreq.containsKey(termo)){
-                                        freq = TermsFreq.remove(termo);
+                                    formatted = removeSpecialCharacters(termo);
+                                    if(TermsFreq.containsKey(formatted)){
+                                        freq = TermsFreq.remove(formatted);
                                         freq++;
-                                        idx.index(termo, docId, freq);
-                                        TermsFreq.put(termo, freq);
+                                        idx.index(formatted, docId, freq);
+                                        TermsFreq.put(formatted, freq);
                                     }else{
-                                        idx.index(termo, docId, 1);
-                                        TermsFreq.put(termo, 1);
+                                        idx.index(formatted, docId, 1);
+                                        TermsFreq.put(formatted, 1);
                                     }
                                 }
                             //}
@@ -324,6 +332,11 @@ public class  QueryRunner {
 		
 		//List<Integer> lstResposta = /**utilize o metodo getDocsTerm para pegar a lista de termos da resposta**/;
                 List<Integer> lstResposta = getDocsTermo(query, idx);
+                
+                for(int l : lstResposta){
+                    System.out.println("oi : " + l);
+                }
+                
 		System.out.println("Tamanho: "+lstResposta.size());
 		
 		//nesse if, vc irá verificar se a consulta possui documentos relevantes
