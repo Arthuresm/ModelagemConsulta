@@ -79,6 +79,9 @@ public abstract class Indice implements Serializable {
 	 * @param arq
 	 * @return
 	 */
+        
+        public abstract List<Integer> retornaDocsPerTerm(String termo);
+        
 	public static Indice leIndice(File arq){
 		return null;
 	}

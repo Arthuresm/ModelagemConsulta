@@ -218,7 +218,6 @@ public class  QueryRunner {
                         String[] name = arq.getName().split(Pattern.quote("."));
                         
                         docId = Integer.parseInt(name[0]);    //docId será nome do arquivo
-                        
                         BufferedReader br = new BufferedReader(new FileReader(arq));
              
                         String st;
@@ -331,11 +330,8 @@ public class  QueryRunner {
 		System.out.println("Total: "+(System.currentTimeMillis()-time)/1000.0+" segs");
 		
 		//List<Integer> lstResposta = /**utilize o metodo getDocsTerm para pegar a lista de termos da resposta**/;
-                List<Integer> lstResposta = getDocsTermo(query, idx);
+                List<Integer> lstResposta = idx.retornaDocsPerTerm(query);
                 
-                for(int l : lstResposta){
-                    System.out.println("oi : " + l);
-                }
                 
 		System.out.println("Tamanho: "+lstResposta.size());
 		

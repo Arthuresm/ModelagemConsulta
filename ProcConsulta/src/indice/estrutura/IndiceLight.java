@@ -22,6 +22,7 @@ public class IndiceLight extends Indice
 
 
 	private Map<String,PosicaoVetor> posicaoIndice;
+        private HashMap<String, List<Integer>> DocsPerTerm;
 	private int[] arrDocId;
 	private int[] arrTermId;
 	private int[] arrFreqTermo;
@@ -42,6 +43,7 @@ public class IndiceLight extends Indice
             arrTermId = new int[initCap];
             arrFreqTermo = new int[initCap];
             posicaoIndice = new HashMap<String,PosicaoVetor>();	
+            DocsPerTerm = new HashMap<String, List<Integer>>();
         }
         
         public int[] aumentaCapacidadeVetor (int[] vetor, double d){
@@ -84,8 +86,24 @@ public class IndiceLight extends Indice
 	 * setados ao concluir a indexação (i.e. no método concluiIndexacao), pois, ao concluir, 
 	 * o vetor será devidamente ordenado.
 	 */
+        public List<Integer> retornaDocsPerTerm(String termo){
+            return DocsPerTerm.get(termo);
+        }
+        
+        
 	@Override
 	public void index(String termo,int docId,int freqTermo){
+            
+            if(DocsPerTerm.containsKey(termo)){
+                if(!DocsPerTerm.get(termo).contains(docId)){
+                    DocsPerTerm.get(termo).add(docId);
+                }
+            }else{
+                List<Integer> docs = new ArrayList<>();
+                docs.add(docId);
+                DocsPerTerm.put(termo, docs);
+            }
+            
             PosicaoVetor idDoTermo = posicaoIndice.get(termo); 
 //            System.out.println("Iremos inserir " + termo);
 //            System.out.println("lastIdx " + lastIdx);
