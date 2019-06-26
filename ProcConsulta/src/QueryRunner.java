@@ -60,6 +60,9 @@ public class  QueryRunner {
             File file2 = new File("Irlanda.dat");
             File file3 = new File("Sao_Paulo.dat");
             Set<Integer> Docs = new HashSet<Integer>();
+            Set<Integer> Docs2 = new HashSet<Integer>();
+            Set<Integer> Docs3 = new HashSet<Integer>();
+
             String[] Docs_str;  
             HashMap<String, Set<Integer>> docCidadesRelevantes = new HashMap<String, Set<Integer>>();
             
@@ -73,31 +76,31 @@ public class  QueryRunner {
                 }
             }
             
-            docCidadesRelevantes.put("Belo Horizonte",Docs);
-            Docs.clear();
+            docCidadesRelevantes.put("belo horizonte",Docs);
+            //Docs.clear();
             
             br = new BufferedReader(new FileReader(file2));
              
             if ((st = br.readLine()) != null){
                 Docs_str = st.split(",");
                 for(String doc : Docs_str){
-                    Docs.add(Integer.parseInt(doc));
+                    Docs2.add(Integer.parseInt(doc));
                 }
             }
             
-            docCidadesRelevantes.put("Irlanda",Docs);
-            Docs.clear();
+            docCidadesRelevantes.put("irlanda",Docs2);
+            //Docs.clear();
             
             br = new BufferedReader(new FileReader(file3));
              
             if ((st = br.readLine()) != null){
                 Docs_str = st.split(",");
                 for(String doc : Docs_str){
-                    Docs.add(Integer.parseInt(doc));
+                    Docs3.add(Integer.parseInt(doc));
                 }
             }
             
-            docCidadesRelevantes.put("Sao Paulo",Docs);
+            docCidadesRelevantes.put("sao paulo",Docs3);
             //Docs.clear();
             
             return docCidadesRelevantes;
@@ -202,6 +205,7 @@ public class  QueryRunner {
                 
                 //lista de pastas dentro da pasta principal
                 File subs[] = file.listFiles();
+                
                 int docId = 0;                
                 //leia o indice (da base de dados forstaticnecida)
   		Indice idx = new IndiceLight(1000);
@@ -247,11 +251,11 @@ public class  QueryRunner {
                 idx.concluiIndexacao();
  		//Checagem se existe um documento (apenas para teste, deveria existir)
 		System.out.println("Existe o doc? "+idx.hasDocId(105047));
-		
+		long time = System.currentTimeMillis();
 		//Instancie o IndicePreCompModelo para precomputar os valores necessarios para a query
 		System.out.println("Precomputando valores atraves do indice...");
                 IndicePreCompModelo idxPreCom = new IndicePreCompModelo(idx);
-		long time = System.currentTimeMillis();
+		
                 
 		System.out.println("Total (precompta o valor da : "+(System.currentTimeMillis()-time)/1000.0+" segs");
 		
@@ -343,7 +347,7 @@ public class  QueryRunner {
 		//se possuir, vc deverá calcular a Precisao e revocação nos top 5, 10, 20, 50. O for que fiz abaixo é só uma sugestao e o metododo countTopNRelevants podera auxiliar no calculo da revocacao e precisao 
 		
                 //Set<Integer> docsRelevantes = new HashSet<Integer>();
-                Set<Integer> docsRelevantes = mapRelevantes.get("Irlanda");
+                Set<Integer> docsRelevantes = mapRelevantes.get(query.toLowerCase());
                         
                 /*for(Set<Integer> set : mapRelevantes.values()){
                     for(Integer i : set){
@@ -368,7 +372,8 @@ public class  QueryRunner {
 
 		//imprima aas top 10 respostas
                 System.out.println("Top 10 respostas: ");
-                printTopNRelevants(lstResposta.size(), lstResposta, docsRelevantes);
+                
+                printTopNRelevants(10, lstResposta, docsRelevantes);
 
 	}
         
@@ -377,11 +382,16 @@ public class  QueryRunner {
             return newText;
         }
         
-        public static void printTopNRelevants(int n, List<Integer> lstRespostas, Set<Integer> docRelevantes){
-                        
-            for(int i=0; i < n; i++){
-                if(docRelevantes.contains(lstRespostas.get(i))){
-                    System.out.println(lstRespostas.get(i));
+        public static void printTopNRelevants(int n, List<Integer> lstRespostas, Set<Integer> docRelevantes) throws IOException{
+                
+            int count = 0;
+            for(int d : docRelevantes){
+                if(lstRespostas.contains(d)){
+                    carregaListaTitulos(d);
+                    count++;
+                }
+                if(count > 9){
+                    break;
                 }
             }            
         }

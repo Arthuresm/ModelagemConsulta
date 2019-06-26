@@ -80,7 +80,6 @@ public class IndicePreCompModelo{
 	private void precomputeValues(Indice idx) {
             //Numero de documentos do indice
             numDocumentos = idx.getNumDocumentos();
-            System.out.println(numDocumentos);
             
             if(numDocumentos != 0)
                 //Media de palavras dos documentos

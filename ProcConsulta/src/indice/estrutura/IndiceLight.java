@@ -244,10 +244,6 @@ public class IndiceLight extends Indice
                 }
             }
             for(int i=1; i <= lastIdx + 1; i++){
-                if(i == (lastIdx/2)){
-                    System.out.println("50% Indexacao concluida");
-                    
-                }
                 if((idAtual != aux) && (idAtual != 0)){
                     arrTermoPorId[idAtual].setNumDocumentos(numDocs.size()); //Observe que ao alterar PosicaoVetor 
                     arrTermoPorId[idAtual].setPosInicial(posInicial);        //dentro do array alteramos no map - passagem por ref
